@@ -32,7 +32,6 @@ public class SocketModule : MonoSingleton<SocketModule>
             nickName = id;
         }
     }
-
     public void SendData(string str)
     {
         if (isRunning && serverStream != null)
@@ -79,12 +78,14 @@ public class SocketModule : MonoSingleton<SocketModule>
                         numBytesRead = serverStream.Read(inStream, 0, inStream.Length);
                         returnData += Encoding.UTF8.GetString(inStream, 0, numBytesRead);
                     }
+                    GameManager.instance.QueueCommand(returnData);
                     Debug.Log(returnData);
                 }
             }
         }
         catch(Exception ex)
         {
+            Debug.Log(ex);
             StopThread();
         }
     }
