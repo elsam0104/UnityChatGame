@@ -54,7 +54,7 @@ public class UserControl : MonoBehaviour
         hpSlider.transform.position = Camera.main.WorldToScreenPoint(transform.position + new Vector3(0, 2f, 0));
         transform.position = Vector3.MoveTowards(transform.position, target, Time.deltaTime * speed);
     }
-    private void SetTargetPos()
+    public void SetTargetPos()
     {
         mousePos = Input.mousePosition;
         Vector3 pos = Camera.main.ScreenToWorldPoint(mousePos);
@@ -63,13 +63,14 @@ public class UserControl : MonoBehaviour
         string moveData = "#Move#" + target.x + ',' + target.y;
         GameManager.Instance.SendCommand(moveData);
     }
+
     private void SetHP(int hp)
     {
         curHp = hp;
         hpSlider.value = curHp;
     }
 
-    private void DropHP(int drop)
+    public void DropHP(int drop)
     {
         SetHP(curHp - drop);
     }
@@ -77,7 +78,6 @@ public class UserControl : MonoBehaviour
     public void Revive()
     {
         SetHP(maxHp);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public int GetHP()
