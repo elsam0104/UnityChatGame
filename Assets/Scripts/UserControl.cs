@@ -27,6 +27,7 @@ public class UserControl : MonoBehaviour
         SetHP(maxHp);
         StartCoroutine(Drop());
         target = transform.position;
+        effectPrefab.SetActive(false);
     }
     private void Update()
     {
@@ -35,9 +36,13 @@ public class UserControl : MonoBehaviour
             if (!EventSystem.current.IsPointerOverGameObject())
             {
                 SetTargetPos();
-                var prefab = Instantiate(effectPrefab);
-                prefab.transform.position = target;
+                effectPrefab.transform.position = target;
+                effectPrefab.SetActive(true);
             }
+        }
+        if (Input.GetMouseButtonUp(0))
+        {
+            effectPrefab.SetActive(false);
         }
         Move();
     }

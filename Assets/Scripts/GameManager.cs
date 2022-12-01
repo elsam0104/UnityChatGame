@@ -11,6 +11,7 @@ public class GameManager : MonoSingleton<GameManager>
     const char CHAR_TEMINATOR = ';';
     const char CHAR_COMMA = ',';
     const int DAMAGE_ATTACK = 20;
+    const int ATTACK_RADIUS = 10;
 
     private UserControl userControl;
 
@@ -49,6 +50,7 @@ public class GameManager : MonoSingleton<GameManager>
     }
     private void Update()
     {
+        ProcessQueue();
         if (Input.GetMouseButtonDown(1))
         {
             if (!EventSystem.current.IsPointerOverGameObject())
@@ -86,7 +88,25 @@ public class GameManager : MonoSingleton<GameManager>
         SendCommand("#Heal#");
         userControl.Revive();
     }
+    public void Attack()
+    {
+        Collider2D[] damageUsers = Physics2D.OverlapCircleAll(User.transform.position, ATTACK_RADIUS);
+        System.Text.StringBuilder damageString = new System.Text.StringBuilder();
 
+        for (int i = 0; i < damageUsers.Length; i++)
+        {
+            UserControl userControl = damageUsers[i].GetComponent<UserControl>();
+            foreach (var item in remoteUsers)
+            {
+                if (item.Value == userControl)
+                {
+                    damageString.Append(item.Key);
+                    damageString.Append(',');
+                }
+            }
+        }
+        SendCommand($"#Attack#{damageString.ToString()}");
+    }
     public UserControl AddUser(string id)
     {
         UserControl userControl = null;
@@ -214,6 +234,11 @@ public class GameManager : MonoSingleton<GameManager>
                     {
                         nextCommand = cmd.Substring(cmdIdx2 + 1);
                     }
+
+                    if(command =="Attack")
+                    {
+                        TakeDamage(remain);
+                    }
                     if (myid.CompareTo(id) != 0)
                     {
                         switch (command)
@@ -226,9 +251,6 @@ public class GameManager : MonoSingleton<GameManager>
                                 break;
                             case "Move":
                                 SetMove(id, remain);
-                                break;
-                            case "Attack":
-
                                 break;
                             case "Damage":
                                 TakeDamage(remain);
